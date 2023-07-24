@@ -7,7 +7,69 @@ namespace ChessChallenge.Example
     // Plays randomly otherwise.
     public class EvilBot : IChessBot
     {
-        // Piece values: null, pawn, knight, bishop, rook, queen, king
+        ///*
+        int[] pieceValues = { 0, 100, 320, 330, 500, 900, 20000 };
+
+        private Board board;
+        private int white = -1;
+        private Move finalMove;
+
+        public Move Think(Board board, Timer timer)
+        {
+            this.board = board;
+
+            if (board.IsWhiteToMove)
+                white = 1;
+
+            var x = NegaMax(4);
+
+            return finalMove;
+        }
+
+        private int NegaMax(int depth)
+        {
+            if (depth == 0) return Evaluate();
+
+            var max = int.MinValue;
+
+            foreach (var move in board.GetLegalMoves())
+            {
+                board.MakeMove(move);
+
+                var score = -NegaMax(depth - 1);
+
+                if (board.IsInCheckmate())
+                {
+                    score = 1000000 + depth * 1000;
+                }
+
+                board.UndoMove(move);
+
+                if (score > max)
+                {
+                    max = score;
+                    if (depth == 4) finalMove = move;
+                }
+            }
+
+            return max;
+        }
+
+        private int Evaluate()
+        {
+            var sum = 0;
+
+            for (var i = 1; i < 7; i++)
+            {
+                sum += (board.GetPieceList((PieceType)i, true).Count - board.GetPieceList((PieceType)i, false).Count) *
+                       pieceValues[i];
+            }
+
+            return sum * white;
+        }
+        //*/
+        
+        /*
         int[] pieceValues = { 0, 100, 300, 300, 500, 900, 10000 };
 
         public Move Think(Board board, Timer timer)
@@ -50,5 +112,6 @@ namespace ChessChallenge.Example
             board.UndoMove(move);
             return isMate;
         }
+        //*/
     }
 }
